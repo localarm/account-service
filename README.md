@@ -12,6 +12,29 @@
 
 java 11, spring boot(web, jdbc), в качестве in-memory кэша используется hazelcast.
 
+#### Для запуска
+1. Необходимо предоставить следующие properties для подключения к БД
+
+>spring.datasource.url
+>
+>spring.datasource.username
+>
+>spring.datasource.password
+
+(Опционально) Максимальный размер кэша (по умолчанию, 100000)
+
+>eviction.size
+
+2. Сервис взаимодействует с следующей таблицей:
+
+>CREATE TABLE accounts(
+>
+>    id INTEGER PRIMARY KEY,
+>    
+>    balance bigint NOT NULL
+>    
+>)
+
 #### Api endpoints
 >GET /accounts/{id}    get balance of specific id
 >
