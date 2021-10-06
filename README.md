@@ -35,6 +35,10 @@ java 11, spring boot(web, jdbc), в качестве in-memory кэша испо
 >    
 >)
 
+3. Добавить аргументы для запуска(для корректной работы hazelcast)
+
+>java --add-modules java.se --add-exports java.base/jdk.internal.ref=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.management/sun.management=ALL-UNNAMED --add-opens jdk.management/com.ibm.lang.management.internal=ALL-UNNAMED --add-opens jdk.management/com.sun.management.internal=ALL-UNNAMED
+
 #### Api endpoints
 >GET /accounts/{id}    get balance of specific id
 >
