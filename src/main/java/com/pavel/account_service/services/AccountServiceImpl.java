@@ -2,6 +2,7 @@ package com.pavel.account_service.services;
 
 import com.hazelcast.map.IMap;
 import com.pavel.account_service.dao.AccountDao;
+import com.pavel.account_service.dao.WrappedDataAccessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -24,10 +25,9 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Long getAmount(Integer id) throws AccountAccessException {
         try {
-            Long amount = cache.get(id);
-            return amount == null ? 0L : amount;
-        } catch (RuntimeException ex) {
-            throw new AccountAccessException("Failed to obtain amount by id " + id, ex);
+            return cache.get(id);
+        } catch (WrappedDataAccessException ex) {
+            throw new AccountAccessException("Failed to obtain amount by " + id + " id from database" , ex);
         } finally {
             statisticService.incrementTotalCountOfGetAmount();
         }
@@ -47,8 +47,8 @@ public class AccountServiceImpl implements AccountService {
                 //just "put" invoke unnecessary cache load from store
                 cache.putTransient(id, cacheValue + value, 0, TimeUnit.MILLISECONDS);
             }
-        } catch (RuntimeException ex)  {
-            throw new AccountAccessException("Failed to set amount to id " + id, ex);
+        } catch (WrappedDataAccessException ex)  {
+            throw new AccountAccessException("Failed to set amount to id " + id + " in database", ex);
         }
         finally {
             cache.unlock(id);

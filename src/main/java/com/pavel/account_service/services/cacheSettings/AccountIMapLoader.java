@@ -2,8 +2,9 @@ package com.pavel.account_service.services.cacheSettings;
 
 import com.hazelcast.map.MapLoader;
 import com.pavel.account_service.dao.AccountDao;
+import com.pavel.account_service.dao.WrappedDataAccessException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
-
 import java.util.Collection;
 import java.util.Map;
 
@@ -20,7 +21,9 @@ public class AccountIMapLoader implements MapLoader<Integer, Long> {
         try {
             return accountDAO.findBalance(key);
         } catch (EmptyResultDataAccessException ex) {
-            return null;
+            return 0L;
+        } catch (DataAccessException ex) {
+            throw new WrappedDataAccessException("Wrap DataAccessException", ex);
         }
     }
 

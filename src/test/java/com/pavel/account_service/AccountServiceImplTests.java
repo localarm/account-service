@@ -12,9 +12,11 @@ import com.pavel.account_service.services.AccountServiceImpl;
 import com.pavel.account_service.services.StatisticServiceImpl;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.BadSqlGrammarException;
+
+import java.sql.SQLException;
 
 public class AccountServiceImplTests {
 
@@ -160,5 +162,16 @@ public class AccountServiceImplTests {
         when(accountDaoMock.findBalance(10)).thenReturn(11L);
         accountService.addAmount(10, 12L);
         verify(accountDaoMock, times(1)).updateBalance(10, 23L);
+    }
+
+    @Test
+    public void testBadSqlGrammarExceptionThrow(){
+        when(accountDaoMock.findBalance(20))
+                .thenThrow(new BadSqlGrammarException("test", "test", new SQLException()));
+        try {
+            accountService.getAmount(20);
+        } catch (AccountAccessException ex) {
+            Assertions.assertTrue(ex.getCause().getCause() instanceof BadSqlGrammarException);
+        }
     }
 }
