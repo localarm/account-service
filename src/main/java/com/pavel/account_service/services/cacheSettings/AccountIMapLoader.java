@@ -21,7 +21,7 @@ public class AccountIMapLoader implements MapLoader<Integer, Long> {
         try {
             return accountDAO.findBalance(key);
         } catch (EmptyResultDataAccessException ex) {
-            return 0L;
+            return null;
         } catch (DataAccessException ex) {
             throw new WrappedDataAccessException("Wrap DataAccessException", ex);
         }

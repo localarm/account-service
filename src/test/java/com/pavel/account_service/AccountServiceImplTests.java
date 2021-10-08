@@ -171,7 +171,7 @@ public class AccountServiceImplTests {
         try {
             accountService.getAmount(20);
         } catch (AccountAccessException ex) {
-            Assertions.assertTrue(ex.getCause().getCause() instanceof BadSqlGrammarException);
+            Assertions.assertTrue(ex.getCause() instanceof BadSqlGrammarException);
         }
     }
 }

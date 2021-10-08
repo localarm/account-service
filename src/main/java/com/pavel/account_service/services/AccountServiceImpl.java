@@ -25,9 +25,10 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Long getAmount(Integer id) throws AccountAccessException {
         try {
-            return cache.get(id);
+            Long value = cache.get(id);
+            return value == null ? 0 : value;
         } catch (WrappedDataAccessException ex) {
-            throw new AccountAccessException("Failed to obtain amount by " + id + " id from database" , ex);
+            throw new AccountAccessException("Failed to obtain amount by " + id + " id from database" , ex.getCause());
         } finally {
             statisticService.incrementTotalCountOfGetAmount();
         }
