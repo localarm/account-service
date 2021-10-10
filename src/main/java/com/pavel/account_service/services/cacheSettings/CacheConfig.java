@@ -4,26 +4,27 @@ import com.hazelcast.config.*;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.map.IMap;
 import com.pavel.account_service.dao.AccountDao;
+import com.pavel.account_service.services.Balance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class HazelcastConfig {
+public class CacheConfig {
 
     private final AccountDao accountDao;
     private final int maxSizeBeforeEviction;
 
     @Autowired
-    public HazelcastConfig(AccountDao accountDao, @Value("${eviction.size:100000}") int maxSizeBeforeEviction) {
+    public CacheConfig(AccountDao accountDao, @Value("${eviction.size:100000}") int maxSizeBeforeEviction) {
         this.accountDao = accountDao;
         System.out.println(maxSizeBeforeEviction);
         this.maxSizeBeforeEviction = maxSizeBeforeEviction;
     }
 
     @Bean
-    public IMap<Integer, Long> cache() {
+    public IMap<Integer, Balance> cache() {
         Config config = new Config();
 
         //disable multicast

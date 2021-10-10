@@ -3,12 +3,13 @@ package com.pavel.account_service.services.cacheSettings;
 import com.hazelcast.map.MapLoader;
 import com.pavel.account_service.dao.AccountDao;
 import com.pavel.account_service.dao.WrappedDataAccessException;
+import com.pavel.account_service.services.Balance;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import java.util.Collection;
 import java.util.Map;
 
-public class AccountIMapLoader implements MapLoader<Integer, Long> {
+public class AccountIMapLoader implements MapLoader<Integer, Balance> {
 
     private final AccountDao accountDAO;
 
@@ -17,18 +18,18 @@ public class AccountIMapLoader implements MapLoader<Integer, Long> {
     }
 
     @Override
-    public Long load(Integer key) {
+    public Balance load(Integer key) {
         try {
-            return accountDAO.findBalance(key);
+            return new Balance(accountDAO.findBalance(key), true);
         } catch (EmptyResultDataAccessException ex) {
-            return null;
+            return new Balance (0L, false);
         } catch (DataAccessException ex) {
             throw new WrappedDataAccessException("Wrap DataAccessException", ex);
         }
     }
 
     @Override
-    public Map<Integer, Long> loadAll(Collection<Integer> keys) {
+    public Map<Integer, Balance> loadAll(Collection<Integer> keys) {
         return null;
     }
 

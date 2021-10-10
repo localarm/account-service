@@ -7,6 +7,7 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import com.pavel.account_service.dao.AccountDao;
 import com.pavel.account_service.services.AccountAccessException;
+import com.pavel.account_service.services.Balance;
 import com.pavel.account_service.services.cacheSettings.AccountIMapLoader;
 import com.pavel.account_service.services.AccountServiceImpl;
 import com.pavel.account_service.services.StatisticServiceImpl;
@@ -22,7 +23,7 @@ public class AccountServiceImplTests {
 
     private static AccountServiceImpl accountService;
     private static HazelcastInstance instance;
-    private static IMap<Integer, Long> cache;
+    private static IMap<Integer, Balance> cache;
     private static AccountDao accountDaoMock;
     private static StatisticServiceImpl statisticServiceImplMock;
 
@@ -115,9 +116,9 @@ public class AccountServiceImplTests {
 
     @Test
     public void invokeUpdateDB_whenSetAmount_andCacheHit() throws AccountAccessException {
-        cache.put(6, 6L);
+        cache.put(4, new Balance(4L, true));
         accountService.addAmount(4, 12L);
-        verify(accountDaoMock, times(1)).updateBalance(4, 12L);
+        verify(accountDaoMock, times(1)).updateBalance(4, 16L);
     }
 
     @Test
@@ -136,7 +137,7 @@ public class AccountServiceImplTests {
 
     @Test
     public void insertedAmount_dontInvokeDaoAtGetAmount() throws AccountAccessException {
-        when(accountDaoMock.findBalance(7)).thenReturn(null);
+        when(accountDaoMock.findBalance(7)).thenThrow(new EmptyResultDataAccessException(1));
         accountService.addAmount(7, 10L);
         Long actual = accountService.getAmount(7);
         Assertions.assertEquals(10L, actual);
@@ -173,5 +174,15 @@ public class AccountServiceImplTests {
         } catch (AccountAccessException ex) {
             Assertions.assertTrue(ex.getCause() instanceof BadSqlGrammarException);
         }
+    }
+
+    @Test
+    public void multipleGetAmount_notInvokeDatabaseFind() throws AccountAccessException {
+        when(accountDaoMock.findBalance(any()))
+                .thenThrow(new EmptyResultDataAccessException(1));
+        for (int i = 0; i < 10; i++) {
+            accountService.getAmount(1);
+        }
+        verify(accountDaoMock, times(1)).findBalance(1);
     }
 }
