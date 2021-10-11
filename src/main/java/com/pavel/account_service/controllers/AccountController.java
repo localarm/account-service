@@ -33,7 +33,7 @@ public class AccountController {
             accountService.addAmount(id, amount.getAmount());
             return ResponseEntity.ok().build();
         } catch (AccountAccessException e) {
-            LOGGER.warn("Failed to set balance = {} to id = {}", amount, id, e);
+            LOGGER.warn("Failed to set balance = {} to id = {}", amount.getAmount(), id, e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
             LOGGER.warn("Unexpected exception occurred", e);

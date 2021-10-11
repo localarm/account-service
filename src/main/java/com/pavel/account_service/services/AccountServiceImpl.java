@@ -41,15 +41,14 @@ public class AccountServiceImpl implements AccountService {
             if (cacheBalance.isStored()) {
                 cacheBalance.addToBalance(value);
                 accountDAO.updateBalance(id,cacheBalance.getBalance());
-                //just "put" invoke unnecessary cache load from store
             } else {
                 accountDAO.insertBalance(id, value);
                 cacheBalance.setBalance(value);
-                cacheBalance.setStored(true);
-                //just "put" invoke unnecessary cache load from store
             }
             cache.putTransient(id, cacheBalance, 0, TimeUnit.MILLISECONDS);
         } catch (WrappedDataAccessException ex)  {
+            throw new AccountAccessException("Failed to set amount to id " + id + " in database", ex.getCause());
+        } catch (DataAccessException ex) {
             throw new AccountAccessException("Failed to set amount to id " + id + " in database", ex);
         }
         finally {
