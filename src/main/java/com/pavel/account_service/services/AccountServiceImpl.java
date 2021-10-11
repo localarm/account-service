@@ -45,6 +45,7 @@ public class AccountServiceImpl implements AccountService {
             } else {
                 accountDAO.insertBalance(id, value);
                 cacheBalance.setBalance(value);
+                cacheBalance.setStored(true);
                 //just "put" invoke unnecessary cache load from store
             }
             cache.putTransient(id, cacheBalance, 0, TimeUnit.MILLISECONDS);
